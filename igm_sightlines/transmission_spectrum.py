@@ -70,6 +70,21 @@ def sig_i(wl, wl_i, b, f_i, gamma_i):
 
 	return Ca * H;
 
+@jit(nopython=True)
+def sig_lyc(wl):
+
+	# wl in Angstrom
+
+	nu = 2.99792458e18/wl # convert to frequency
+	nu_z = 2.99792458e18/911.8 # lyman continuum
+	A = 6.3e-18 * (nu_z/nu)**4.0
+	tau = ((nu/nu_z) - 1)**0.5
+	t1 = np.exp(4. - (4. * np.arctan(tau)/tau))
+	t2 = 1. - np.exp((-2.*np.pi)/tau)
+
+	return A * (t1/t2)
+
+
 
 @jit(nopython=True)
 def generate_transmission_spectrum(wl, nhi, b):
@@ -123,7 +138,7 @@ def generate_transmission_spectrum(wl, nhi, b):
 
 	# add the lyman continuum absorption:
 	for i in range(wl.shape[0]):
-		if wl[i] <= 912.0:
-			sigma_ls[i] += 6.3e-18 * (wl[i]/912.) ** 2.75
+		if wl[i] <= 911.8:
+			sigma_ls[i] += sig_lyc(wl=wl[i])
 
 	return nhi * sigma_ls
