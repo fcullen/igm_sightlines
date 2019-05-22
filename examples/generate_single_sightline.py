@@ -9,8 +9,10 @@ import time
 
 if __name__ == "__main__":
 
+	make_spec = True
+
 	# set the redshift
-	z = 1.0
+	z = 3.05
 
 	# make a sightlines object
 	sl = igm.kbss.Sightline(redshift=z, include_low_density=True, 
@@ -29,17 +31,19 @@ if __name__ == "__main__":
 	print("Generated {:d} LSS clouds".format(len(sl.lnhi[sl.lnhi>=17.2])))
 	print("Generated {:d} total clouds\n".format(sl.nclouds))
 
-	# make the transmission spectrum for this sighline
-	sl.make_transmission_spectrum(print_progress=True)
-	
-	# plot:
-	fig, ax = plt.subplots(figsize=(15, 5))
-	ax.minorticks_on()
-	
-	ax.plot(sl.wl/(1.+sl.zs), sl.transmission, ls='-', lw=0.5, color='k')
+	if make_spec:
 
-	ax.set_ylim(0.0, 1.05)
-	ax.set_xlim(700, 1300)
+		# make the transmission spectrum for this sighline
+		sl.make_transmission_spectrum(print_progress=True)
+		
+		# plot:
+		fig, ax = plt.subplots(figsize=(15, 5))
+		ax.minorticks_on()
+		
+		ax.plot(sl.wl/(1.+sl.zs), sl.transmission, ls='-', lw=0.5, color='k')
 
-	plt.show()
-	plt.clf()
+		ax.set_ylim(0.0, 1.05)
+		ax.set_xlim(700, 1300)
+
+		plt.show()
+		plt.clf()
